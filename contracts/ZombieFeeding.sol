@@ -1,6 +1,7 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 import "./ZombieFactory.sol";
+import "./Ownable.sol";
 
 interface KityInterface {
     function getKitty(uint256 _id)
@@ -20,9 +21,12 @@ interface KityInterface {
         );
 }
 
-contract ZombieFeeding is ZombieFactory {
-    address ckAddress = 0x06012c8cf97BEaD5deAe237070F9587f8E7A266d;
-    KityInterface kittyContract = KityInterface(ckAddress);
+contract ZombieFeeding is ZombieFactory,Ownable {
+    KityInterface kittyContract;
+
+    function setKittyContractAddress(address _address) external onlyOwner {
+        kittyContract = KityInterface(_address);
+    }
 
     function _triggercooldown(Zombie storage _zombie) internal {
         _zombie.readyTime = uint32(block.timestamp + cooldownTime);
@@ -34,11 +38,11 @@ contract ZombieFeeding is ZombieFactory {
 
     //create new dna and create new zombie with old zombie and target zombie
     //checked if zombie eat kitty we calculate dna and last two number shuld 99
-    function feedAndMultiply(
+    function _feedAndMultiply(
         uint256 _zombieId,
         uint256 _targetDna,
         string memory _species
-    ) public {
+    ) internal {
         require(zombieToOwner[_zombieId] == msg.sender);
         Zombie storage myZombie = zombies[_zombieId];
         require(_isReady(myZombie));
@@ -57,6 +61,6 @@ contract ZombieFeeding is ZombieFactory {
     function feedOnKitty(uint256 _zombieId, uint256 _kittyId) public {
         uint256 kittyDna;
         (, , , , , , , , , kittyDna) = kittyContract.getKitty(_kittyId);
-        feedAndMultiply(_zombieId, kittyDna, "kitty");
+        _feedAndMultiply(_zombieId, kittyDna, "kitty");
     }
 }
