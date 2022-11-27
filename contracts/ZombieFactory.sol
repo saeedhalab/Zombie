@@ -16,6 +16,11 @@ contract ZombieFactory {
     mapping(uint256 => address) public zombieToOwner;
     mapping(address => uint256) ownerZombieCount;
 
+    modifier isOwnerZombie (uint _zombieId){
+        require(zombieToOwner[_zombieId] == msg.sender); 
+        _;   
+    }
+
     function _createZombie(string memory _name, uint256 _dna) internal {
         zombies.push(
             Zombie(_name, _dna, 1, uint32(block.timestamp + cooldownTime))
