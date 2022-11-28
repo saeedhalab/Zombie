@@ -11,19 +11,21 @@ contract ZombieFactory {
         uint256 dna;
         uint32 level;
         uint32 readyTime;
+        uint16 winCount;
+        uint16 losCount;
     }
     Zombie[] public zombies;
     mapping(uint256 => address) public zombieToOwner;
     mapping(address => uint256) ownerZombieCount;
 
-    modifier isOwnerZombie (uint _zombieId){
-        require(zombieToOwner[_zombieId] == msg.sender); 
-        _;   
+    modifier isOwnerZombie(uint256 _zombieId) {
+        require(zombieToOwner[_zombieId] == msg.sender);
+        _;
     }
 
     function _createZombie(string memory _name, uint256 _dna) internal {
         zombies.push(
-            Zombie(_name, _dna, 1, uint32(block.timestamp + cooldownTime))
+            Zombie(_name, _dna, 1, uint32(block.timestamp + cooldownTime), 0, 0)
         );
         uint256 id = (zombies.length) - 1;
         zombieToOwner[id] = msg.sender;
