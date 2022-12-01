@@ -1,7 +1,10 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
+import "./SafeMath.sol";
+
 contract ZombieFactory {
+    using SafeMath for uint256;
     event newZombie(uint256 zombieId, string name, uint256 dna);
     uint256 dnaDigits = 16;
     uint256 dnaModulus = 10**dnaDigits;
